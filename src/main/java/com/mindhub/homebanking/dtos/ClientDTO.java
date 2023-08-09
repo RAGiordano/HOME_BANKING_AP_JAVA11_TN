@@ -1,4 +1,4 @@
-package dtos;
+package com.mindhub.homebanking.dtos;
 
 import com.mindhub.homebanking.models.Client;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ public class ClientDTO{
         this.firstName = client.getFirstName();
         this.lastName = client.getLastName();
         this.email = client.getEmail();
-        this.accounts.addAll(client.getAccounts().stream().map(account -> new AccountDTO(account)).collect(toSet()));
+        this.accounts = client.getAccounts().stream().map(account -> new AccountDTO(account)).collect(toSet());
     }
 //Set<Account> accounts = new HashSet<>();
 //return clientRepository.findAll().stream().map(client -> new ClientDTO(client)).collect(toList());
@@ -45,6 +45,10 @@ public class ClientDTO{
 
     public String getEmail() {
         return email;
+    }
+
+    public Set<AccountDTO> getAccounts(){
+        return accounts;
     }
 
 }
