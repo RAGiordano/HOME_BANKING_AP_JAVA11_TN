@@ -11,22 +11,19 @@ public class ClientDTO{
     private String firstName;
     private String lastName;
     private String email;
-    Set<AccountDTO> accounts = new HashSet<>();
+    private Set<AccountDTO> accounts = new HashSet<>();
 
 
 
     // -------------------- Constructors --------------------
     public ClientDTO(Client client){
-        //AccountRepository accountRepository = new AccountRepository;
-
         this.id = client.getId();
         this.firstName = client.getFirstName();
         this.lastName = client.getLastName();
         this.email = client.getEmail();
         this.accounts = client.getAccounts().stream().map(account -> new AccountDTO(account)).collect(toSet());
     }
-//Set<Account> accounts = new HashSet<>();
-//return clientRepository.findAll().stream().map(client -> new ClientDTO(client)).collect(toList());
+
     // -------------------- Getters --------------------
 
     public long getId() {

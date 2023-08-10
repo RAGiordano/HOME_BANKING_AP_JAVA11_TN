@@ -18,8 +18,8 @@ public class Client {
     private String lastName;
     private String email;
 
-    @OneToMany(mappedBy="owner", fetch=FetchType.EAGER)
-    Set<Account> accounts = new HashSet<>();
+    @OneToMany(mappedBy="client", fetch=FetchType.EAGER)
+    private Set<Account> accounts = new HashSet<>();
 
     // -------------------- Constructors --------------------
     public Client() {
@@ -71,7 +71,7 @@ public class Client {
     // -------------------- Additional methods --------------------
 
     public void addAccount(Account account){
-        account.setOwner(this);
+        account.setClient(this);
         accounts.add(account);
     }
 
