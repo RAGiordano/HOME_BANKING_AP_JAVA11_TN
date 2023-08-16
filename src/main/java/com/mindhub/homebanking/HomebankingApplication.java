@@ -25,7 +25,8 @@ public class HomebankingApplication {
 			AccountRepository accountRepository,
 			TransactionRepository transactionRepository,
 			LoanRepository loanRepository,
-			ClientLoanRepository clientLoanRepository) {
+			ClientLoanRepository clientLoanRepository,
+			CardRepository cardRepository) {
 		return (args) -> {
 			Client client1 = new Client("Melba", "Morel", "melba@mindhub.com");
 			Client client2 = new Client("Richard", "Dean Anderson", "richarddanderson@mindhub.com");
@@ -33,6 +34,7 @@ public class HomebankingApplication {
 			LocalDate actualDate = LocalDate.now();
 			LocalDate tomorrowDate = actualDate.plusDays(1);
 			LocalDateTime actualDateTime = LocalDateTime.now();
+			LocalDate thruDate = actualDate.plusYears(5);
 
 			Account account1 = new Account("VIN001", actualDate, 5000);
 			Account account2 = new Account("VIN002", tomorrowDate, 7500);
@@ -100,6 +102,26 @@ public class HomebankingApplication {
 			clientLoanRepository.save(clientLoan2);
 			clientLoanRepository.save(clientLoan3);
 			clientLoanRepository.save(clientLoan4);
+
+			client1.addClientLoan(clientLoan1);
+			client1.addClientLoan(clientLoan2);
+			client2.addClientLoan(clientLoan3);
+			client2.addClientLoan(clientLoan4);
+
+
+			//CardType type, long number, Short cvv, LocalDate fromDate, LocalDate thruDate, String cardHolder, CardColor color
+			Card card1 = new Card(CardType.DEBIT, 5834128475236942l,(short) 514, actualDate, thruDate, client1.getLastName() + " " + client1.getFirstName(), CardColor.GOLD);
+			Card card2 = new Card(CardType.CREDIT, 2014003526180217l,(short) 137, actualDate, thruDate, client1.getLastName() + " " + client1.getFirstName(), CardColor.TITANIUM);
+			Card card3 = new Card(CardType.DEBIT, 6901205401124815l,(short) 614, actualDate, thruDate, client2.getLastName() + " " + client2.getFirstName(), CardColor.SILVER);
+
+			client1.addCard(card1);
+			client1.addCard(card2);
+			client2.addCard(card3);
+
+			cardRepository.save(card1);
+			cardRepository.save(card2);
+			cardRepository.save(card3);
+
 
 		};
 
