@@ -22,6 +22,9 @@ public class Client {
     private String firstName;
     private String lastName;
     private String email;
+    private String password;
+
+    private ClientRoleType role;
 
     @OneToMany(mappedBy="client", fetch=FetchType.EAGER)
     private Set<Account> accounts = new HashSet<>();
@@ -36,10 +39,12 @@ public class Client {
     public Client() {
     }
 
-    public Client(String firstName, String lastName, String email) {
+    public Client(String firstName, String lastName, String email, String password, ClientRoleType role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
     // -------------------- Getters & setters --------------------
@@ -69,6 +74,22 @@ public class Client {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public ClientRoleType getRole() {
+        return role;
+    }
+
+    public void setRole(ClientRoleType role) {
+        this.role = role;
     }
 
     public Set<Account> getAccounts() {

@@ -2,10 +2,12 @@ package com.mindhub.homebanking;
 
 import com.mindhub.homebanking.models.*;
 import com.mindhub.homebanking.repositories.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +21,9 @@ public class HomebankingApplication {
 	}
 
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	@Bean
 	public CommandLineRunner initData(
 			ClientRepository clientRepository,
@@ -28,8 +33,9 @@ public class HomebankingApplication {
 			ClientLoanRepository clientLoanRepository,
 			CardRepository cardRepository) {
 		return (args) -> {
-			Client client1 = new Client("Melba", "Morel", "melba@mindhub.com");
-			Client client2 = new Client("Richard", "Dean Anderson", "richarddanderson@mindhub.com");
+			Client client1 = new Client("Melba", "Morel", "melba@mindhub.com", passwordEncoder.encode("123456"), ClientRoleType.CLIENT);
+			Client client2 = new Client("Richard", "Dean Anderson", "richarddanderson@mindhub.com", passwordEncoder.encode("654321"), ClientRoleType.CLIENT);
+			Client client3 = new Client("Admin", "Admin", "admin@mindhub.com", passwordEncoder.encode("admin"), ClientRoleType.ADMIN);
 
 			LocalDate actualDate = LocalDate.now();
 			LocalDate tomorrowDate = actualDate.plusDays(1);
@@ -41,10 +47,12 @@ public class HomebankingApplication {
 			Account account3 = new Account("VIN003", actualDate, 50000);
 			Account account4 = new Account("VIN004", actualDate, 1100000);
 			Account account5 = new Account("VIN005", actualDate, 250000);
+			Account account6 = new Account("VIN006", actualDate, 90000000);
 
 			//Saves clients and generates their primary keys.
 			clientRepository.save(client1);
 			clientRepository.save(client2);
+			clientRepository.save(client3);
 
 
 			client1.addAccount(account1);
@@ -52,6 +60,7 @@ public class HomebankingApplication {
 			client2.addAccount(account3);
 			client2.addAccount(account4);
 			client2.addAccount(account5);
+			client3.addAccount(account6);
 
 
 			accountRepository.save(account1);
@@ -59,6 +68,7 @@ public class HomebankingApplication {
 			accountRepository.save(account3);
 			accountRepository.save(account4);
 			accountRepository.save(account5);
+			accountRepository.save(account6);
 
 			Transaction transaction1 = new Transaction(TransactionType.CREDIT, 1200000, "Transferencia Banco Nación", actualDateTime);
 			Transaction transaction2 = new Transaction(TransactionType.DEBIT, -150000, "Débito automático servicios", actualDateTime);
