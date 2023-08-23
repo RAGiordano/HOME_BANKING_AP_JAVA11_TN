@@ -29,30 +29,20 @@ public class WebAuthentication extends GlobalAuthenticationConfigurerAdapter {
             if (client != null) {
                 if (client.getRole().equals(ClientRoleType.ADMIN)){
                     //ADMIN
-                    System.out.println("ADMIN");
                     return new User(client.getEmail(), client.getPassword(),
-                            AuthorityUtils.createAuthorityList("ADMIN", "CLIENT"));
+                            AuthorityUtils.createAuthorityList("ADMIN"));
                 } else if (client.getRole().equals(ClientRoleType.CLIENT)){
                     //CLIENT
-                    System.out.println("CLIENT");
                     return new User(client.getEmail(), client.getPassword(),
                             AuthorityUtils.createAuthorityList("CLIENT"));
                 } else {
-                    System.out.println("Unknown roletype");
                     throw new UsernameNotFoundException("Unknown roletype: " + client.getRole().toString());
                 }
 
-                /*return new User(client.getEmail(), client.getPassword(),
-                        AuthorityUtils.createAuthorityList("CLIENT"));*/
-
             } else {
-                System.out.println("Unknown user");
                 throw new UsernameNotFoundException("Unknown user: " + inputName);
-
             }
-
         });
-
 
     }
 

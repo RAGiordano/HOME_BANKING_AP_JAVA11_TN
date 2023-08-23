@@ -32,27 +32,29 @@ public class WebAuthorization {
                         "/api/logout",
                         "/api/clients").permitAll()
 
-                //ADMIN
-                .antMatchers("/admin/**",
-                        "/manager",
-                        "/rest/**",
-                        "/h2-console/**").hasAuthority("ADMIN")
-
-                //CLIENT
+                //CLIENT AND ADMIN
                 .antMatchers("/logout.html",
                         "/web/accounts.html",
+                        "/web/account.html**",
                         "/web/cards.html",
                         "/web/transfers.html",
                         "/web/loan-application.html",
-                        "/api/clients/current").hasAuthority("CLIENT")
+                        "/api/clients/current",
+                        "/api/accounts/**").hasAnyAuthority("CLIENT", "ADMIN")
 
-                //CLIENT (POST)
+                //CLIENT AND ADMIN (POST)
                 .antMatchers(HttpMethod.POST,
-                        "/api/clients/**").hasAuthority("CLIENT")
+                        "/api/clients/**").hasAnyAuthority("CLIENT", "ADMIN")
+
+                //ADMIN
+                .antMatchers("/admin/**",
+                        "/manager.html",
+                        "/rest/**",
+                        "/h2-console",
+                        "/h2-console/**").hasAuthority("ADMIN")
 
                 //Permission is denied for all requests that have not been granted.
                 .anyRequest().denyAll();
-
 
 
 
@@ -66,7 +68,7 @@ public class WebAuthorization {
 
 
 
-        http.logout().logoutUrl("/api/logout");
+        http.logout().logoutUrl("/api/logout").deleteCookies("JSESSIONID");
 
 
         // turn off checking for CSRF tokens

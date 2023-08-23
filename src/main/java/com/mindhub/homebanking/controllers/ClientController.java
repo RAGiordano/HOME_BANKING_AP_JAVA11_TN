@@ -50,8 +50,6 @@ public class ClientController {
             @RequestParam String email,
             @RequestParam String password) {
 
-
-
         if (firstName.isEmpty()){
             return new ResponseEntity<>("First name is required", HttpStatus.FORBIDDEN);
         }

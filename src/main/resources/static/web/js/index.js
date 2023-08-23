@@ -22,7 +22,7 @@ Vue.createApp({
             axios.post('/api/login', `email=${this.email}&password=${this.password}`, config)
                 .then(response => window.location.href = "/web/accounts.html")
                 .catch(() => {
-                    this.errorMsg = "Sign in failed, check the information (1)"
+                    this.errorMsg = "Sign in failed, check the information"
                     this.errorToats.show();
                 })
         },
@@ -36,7 +36,7 @@ Vue.createApp({
             axios.post('/api/clients', `firstName=${this.firstName}&lastName=${this.lastName}&email=${this.email}&password=${this.password}`, config)
                 .then(() => { this.signIn(event) })
                 .catch(() => {
-                    this.errorMsg = "Sign up failed, check the information (2)"
+                    this.errorMsg = "Sign up failed, check the information"
                     this.errorToats.show();
                 })
         },
