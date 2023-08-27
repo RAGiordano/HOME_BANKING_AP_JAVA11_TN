@@ -12,7 +12,7 @@ public class CardDTO {
     // -------------------- Attributes --------------------
     private long id;
     private CardType type;
-    private long number;
+    private String number;
     private Short cvv;
     private LocalDate fromDate;
     private LocalDate thruDate;
@@ -25,7 +25,7 @@ public class CardDTO {
     public CardDTO(Card card) {
         this.id = card.getId();
         this.type = card.getType();
-        this.number = card.getNumber();
+        this.number = new String(card.getNumber());
         this.cvv = card.getCvv();
         this.fromDate = card.getFromDate();
         this.thruDate = card.getThruDate();
@@ -45,7 +45,7 @@ public class CardDTO {
         return type;
     }
 
-    public long getNumber() {
+    public String getNumber() {
         return number;
     }
 

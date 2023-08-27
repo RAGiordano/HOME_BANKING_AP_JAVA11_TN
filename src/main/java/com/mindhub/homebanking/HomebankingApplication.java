@@ -1,5 +1,7 @@
 package com.mindhub.homebanking;
 
+import com.mindhub.homebanking.controllers.AccountController;
+import com.mindhub.homebanking.controllers.CardController;
 import com.mindhub.homebanking.models.*;
 import com.mindhub.homebanking.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,28 +35,30 @@ public class HomebankingApplication {
 			ClientLoanRepository clientLoanRepository,
 			CardRepository cardRepository) {
 		return (args) -> {
-			Client client1 = new Client("Melba", "Morel", "melba@mindhub.com", passwordEncoder.encode("123456"), ClientRoleType.CLIENT);
-			Client client2 = new Client("Richard", "Dean Anderson", "richarddanderson@mindhub.com", passwordEncoder.encode("654321"), ClientRoleType.CLIENT);
-			Client client3 = new Client("Admin", "Admin", "admin@mindhub.com", passwordEncoder.encode("admin"), ClientRoleType.ADMIN);
-
 			LocalDate actualDate = LocalDate.now();
 			LocalDate tomorrowDate = actualDate.plusDays(1);
 			LocalDateTime actualDateTime = LocalDateTime.now();
 			LocalDate thruDate = actualDate.plusYears(5);
 
-			Account account1 = new Account("VIN001", actualDate, 5000);
-			Account account2 = new Account("VIN002", tomorrowDate, 7500);
-			Account account3 = new Account("VIN003", actualDate, 50000);
-			Account account4 = new Account("VIN004", actualDate, 1100000);
-			Account account5 = new Account("VIN005", actualDate, 250000);
-			Account account6 = new Account("VIN006", actualDate, 90000000);
+			//Creates Client objects
+			Client client1 = new Client("Melba", "Morel", "melba@mindhub.com", passwordEncoder.encode("123456"), ClientRoleType.CLIENT);
+			Client client2 = new Client("Richard", "Dean Anderson", "richarddanderson@mindhub.com", passwordEncoder.encode("654321"), ClientRoleType.CLIENT);
+			Client client3 = new Client("Admin", "Admin", "admin@mindhub.com", passwordEncoder.encode("admin"), ClientRoleType.ADMIN);
 
-			//Saves clients and generates their primary keys.
+			//Creates Account objects
+			Account account1 = new Account(AccountController.generateNewAccountNumber(), actualDate, 5000);
+			Account account2 = new Account(AccountController.generateNewAccountNumber(), tomorrowDate, 7500);
+			Account account3 = new Account(AccountController.generateNewAccountNumber(), actualDate, 50000);
+			Account account4 = new Account(AccountController.generateNewAccountNumber(), actualDate, 1100000);
+			Account account5 = new Account(AccountController.generateNewAccountNumber(), actualDate, 250000);
+			Account account6 = new Account(AccountController.generateNewAccountNumber(), actualDate, 90000000);
+
+			//Saves clients in the database and generates their primary keys.
 			clientRepository.save(client1);
 			clientRepository.save(client2);
 			clientRepository.save(client3);
 
-
+			//Adds each account to its client
 			client1.addAccount(account1);
 			client1.addAccount(account2);
 			client2.addAccount(account3);
@@ -62,7 +66,7 @@ public class HomebankingApplication {
 			client2.addAccount(account5);
 			client3.addAccount(account6);
 
-
+			//Saves accounts in the database and generates its primary keys.
 			accountRepository.save(account1);
 			accountRepository.save(account2);
 			accountRepository.save(account3);
@@ -70,6 +74,7 @@ public class HomebankingApplication {
 			accountRepository.save(account5);
 			accountRepository.save(account6);
 
+			//Creates Transaction objects
 			Transaction transaction1 = new Transaction(TransactionType.CREDIT, 1200000, "Transferencia Banco Nación", actualDateTime);
 			Transaction transaction2 = new Transaction(TransactionType.DEBIT, -150000, "Débito automático servicios", actualDateTime);
 			Transaction transaction3 = new Transaction(TransactionType.CREDIT, 30000, "Depósito cajero", actualDateTime);
@@ -78,6 +83,7 @@ public class HomebankingApplication {
 			Transaction transaction6 = new Transaction(TransactionType.CREDIT, 500000, "Transferencia Banco Industrial", actualDateTime);
 			Transaction transaction7 = new Transaction(TransactionType.DEBIT, -20000, "Pago servicios", actualDateTime);
 
+			//Adds each transaction to its account
 			account1.addTransaction(transaction1);
 			account1.addTransaction(transaction2);
 			account1.addTransaction(transaction3);
@@ -86,6 +92,7 @@ public class HomebankingApplication {
 			account3.addTransaction(transaction6);
 			account3.addTransaction(transaction7);
 
+			//Saves transactions in the database and generates its primary keys
 			transactionRepository.save(transaction1);
 			transactionRepository.save(transaction2);
 			transactionRepository.save(transaction3);
@@ -94,45 +101,48 @@ public class HomebankingApplication {
 			transactionRepository.save(transaction6);
 			transactionRepository.save(transaction7);
 
+			//Creates Loan objects
 			Loan loan1 = new Loan("Hipotecario", 500000, List.of((short) 12, (short) 24, (short) 36, (short) 48, (short) 60));
 			Loan loan2 = new Loan("Personal", 100000, List.of((short) 6, (short) 12, (short) 24));
 			Loan loan3 = new Loan("Automotriz", 300000, List.of((short) 6, (short) 12, (short) 24, (short) 36));
 
+			//Saves loans in the database and generates its primary keys
 			loanRepository.save(loan1);
 			loanRepository.save(loan2);
 			loanRepository.save(loan3);
 
-			//double amount, short payments, Client client, Loan loan
+			//Creates ClientLoan objects
 			ClientLoan clientLoan1 = new ClientLoan(400000, (short) 60, client1, loan1);
 			ClientLoan clientLoan2 = new ClientLoan(50000, (short) 12, client1, loan2);
 			ClientLoan clientLoan3 = new ClientLoan(100000, (short) 24, client2, loan2);
 			ClientLoan clientLoan4 = new ClientLoan(200000, (short) 36, client2, loan3);
 
+			//Saves clientLoans in the database and generates its primary keys
 			clientLoanRepository.save(clientLoan1);
 			clientLoanRepository.save(clientLoan2);
 			clientLoanRepository.save(clientLoan3);
 			clientLoanRepository.save(clientLoan4);
 
+			//Adds each clientLoan to its client
 			client1.addClientLoan(clientLoan1);
 			client1.addClientLoan(clientLoan2);
 			client2.addClientLoan(clientLoan3);
 			client2.addClientLoan(clientLoan4);
 
+			//Creates Card objects
+			Card card1 = new Card(CardType.DEBIT, CardController.generateCardNumber(),CardController.generateCVV(), actualDate, thruDate, client1.getLastName() + " " + client1.getFirstName(), CardColor.GOLD);
+			Card card2 = new Card(CardType.CREDIT, CardController.generateCardNumber(),CardController.generateCVV(), actualDate, thruDate, client1.getLastName() + " " + client1.getFirstName(), CardColor.TITANIUM);
+			Card card3 = new Card(CardType.DEBIT, CardController.generateCardNumber(),CardController.generateCVV(), actualDate, thruDate, client2.getLastName() + " " + client2.getFirstName(), CardColor.SILVER);
 
-			//CardType type, long number, Short cvv, LocalDate fromDate, LocalDate thruDate, String cardHolder, CardColor color
-			Card card1 = new Card(CardType.DEBIT, 5834128475236942l,(short) 514, actualDate, thruDate, client1.getLastName() + " " + client1.getFirstName(), CardColor.GOLD);
-			Card card2 = new Card(CardType.CREDIT, 2014003526180217l,(short) 137, actualDate, thruDate, client1.getLastName() + " " + client1.getFirstName(), CardColor.TITANIUM);
-			Card card3 = new Card(CardType.DEBIT, 6901205401124815l,(short) 614, actualDate, thruDate, client2.getLastName() + " " + client2.getFirstName(), CardColor.SILVER);
-
+			//Adds each card to its client
 			client1.addCard(card1);
 			client1.addCard(card2);
 			client2.addCard(card3);
 
+			//Saves cards in the database and generates its primary keys
 			cardRepository.save(card1);
 			cardRepository.save(card2);
 			cardRepository.save(card3);
-
-
 		};
 
 	}

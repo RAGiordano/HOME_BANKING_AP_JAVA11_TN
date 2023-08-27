@@ -22,8 +22,8 @@ public class WebAuthorization {
         http.authorizeRequests()
                 //ALL
                 .antMatchers("/web/index.html",
-                        "/web/css/**",
-                        "/web/js/**",
+                        "/web/css/style.css",
+                        "/web/js/index.js",
                         "/web/img/**").permitAll()
 
                 //ALL (POST)
@@ -35,35 +35,39 @@ public class WebAuthorization {
                 //CLIENT AND ADMIN
                 .antMatchers("/logout.html",
                         "/web/accounts.html",
-                        "/web/account.html**",
+                        "/web/img/**",
+                        "/web/css/**").hasAnyAuthority("CLIENT", "ADMIN")
+
+                //CLIENT (POST)
+                .antMatchers(HttpMethod.POST,
+                        //"/api/clients/**",
+                        "/api/clients/current/accounts",
+                        "/api/clients/current/cards").hasAuthority("CLIENT")
+
+                //CLIENT
+                .antMatchers("/web/account.html**",
                         "/web/cards.html",
                         "/web/transfers.html",
                         "/web/loan-application.html",
                         "/api/clients/current",
-                        "/api/accounts/**").hasAnyAuthority("CLIENT", "ADMIN")
-
-                //CLIENT AND ADMIN (POST)
-                .antMatchers(HttpMethod.POST,
-                        "/api/clients/**").hasAnyAuthority("CLIENT", "ADMIN")
+                        "/api/accounts/**",
+                        "/web/create-cards.html").hasAuthority("CLIENT")
 
                 //ADMIN
                 .antMatchers("/admin/**",
                         "/manager.html",
                         "/rest/**",
-                        "/h2-console",
-                        "/h2-console/**").hasAuthority("ADMIN")
+                        //"/h2-console/**",
+                        "/h2-console").hasAuthority("ADMIN")
 
-                //Permission is denied for all requests that have not been granted.
+                //Denies permission to all requests that have not been explicitly granted.
                 .anyRequest().denyAll();
 
 
 
         http.formLogin()
-
                 .usernameParameter("email")
-
                 .passwordParameter("password")
-
                 .loginPage("/api/login");
 
 

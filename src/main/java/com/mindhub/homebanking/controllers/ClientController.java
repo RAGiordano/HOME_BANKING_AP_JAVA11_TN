@@ -1,7 +1,9 @@
 package com.mindhub.homebanking.controllers;
 
+import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.models.ClientRoleType;
+import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.dtos.ClientDTO;
 import org.springframework.security.core.Authentication;
@@ -10,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,8 +31,11 @@ public class ClientController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AccountRepository accountRepository;
 
     // -------------------- Additional methods --------------------
+    //Returns the list of all clients data
     @RequestMapping("/clients")
     public List<ClientDTO> getClients() {
         return clientRepository.findAll().stream()
@@ -36,6 +43,7 @@ public class ClientController {
                 .collect(toList());
     }
 
+    // Returns data of a specific client (by id)
     @RequestMapping("/clients/{id}")
     public ClientDTO getClient(@PathVariable Long id) {
         return clientRepository.findById(id)
@@ -78,7 +86,24 @@ public class ClientController {
             return new ResponseEntity<>("E-mail already in use", HttpStatus.FORBIDDEN);
         }
 
-        clientRepository.save(new Client(firstName, lastName, email, passwordEncoder.encode(password), ClientRoleType.CLIENT));
+        // Creates Client object with default role type "CLIENT"
+        Client newClient = new Client(firstName, lastName, email, passwordEncoder.encode(password), ClientRoleType.CLIENT);
+
+        // Calls static method generateNewAccountNumber in AccountController to generate a non-repeated account number
+        String accountNumber = AccountController.generateNewAccountNumber();
+
+        // Saves client in the database and generates its primary key
+        clientRepository.save(newClient);
+
+        // Creates first account for the new client
+        Account account1 = new Account(accountNumber, LocalDate.now(), 0);
+
+        // Adds account to current client
+        newClient.addAccount(account1);
+
+        // Saves account in the database and generates its primary key
+        accountRepository.save(account1);
+
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
