@@ -35,7 +35,7 @@ public class WebAuthorization {
                 //CLIENT AND ADMIN
                 .antMatchers("/logout.html",
                         "/web/accounts.html",
-                        "/web/img/**",
+                        "/web/js/**",
                         "/web/css/**").hasAnyAuthority("CLIENT", "ADMIN")
 
                 //CLIENT (POST)
