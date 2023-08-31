@@ -41,16 +41,25 @@ public class AccountController {
     }
 
     @RequestMapping("/accounts/{id}")
-    public AccountDTO getAccount(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<Object> getAccount(@PathVariable Long id, Authentication authentication) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        //Checks if the account belongs to the current client
-        if (clientRepository.findByEmail(authentication.getName()).getAccounts().contains(account)) {
-            return new AccountDTO(account);
+        if (account != null) {
+            //Checks if the account belongs to the current client
+            if (clientRepository.findByEmail(authentication.getName()).getAccounts().contains(account)) {
+                return new ResponseEntity<>(new AccountDTO(account), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Access denied", HttpStatus.FORBIDDEN);
+            }
         } else {
-            throw new RuntimeException("Unauthorized access to account");
+            return new ResponseEntity<>("The account does not exist", HttpStatus.FORBIDDEN);
         }
+    }
+
+    @RequestMapping(path = "/clients/current/accounts")
+    public ResponseEntity<Object> getAccounts(Authentication authentication) {
+            return new ResponseEntity<>(clientRepository.findByEmail(authentication.getName()).getAccounts(), HttpStatus.OK);
     }
 
     @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
@@ -76,13 +85,7 @@ public class AccountController {
     }
 
     //Generates a non-repeated account number
-    public static String generateNewAccountNumber() { // List<Client> clients) {
-        //Generates a collection of existing account numbers
-        /*Set<String> existingAccountNumbers = clients.stream()
-                .flatMap(client -> client.getAccounts().stream())
-                .map(account -> account.getNumber())
-                .collect(Collectors.toSet());*/
-
+    public static String generateNewAccountNumber() {
         Random random = new Random();
         String newAccountNumber;
         do {

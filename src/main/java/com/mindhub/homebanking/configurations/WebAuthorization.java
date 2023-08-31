@@ -42,7 +42,8 @@ public class WebAuthorization {
                 .antMatchers(HttpMethod.POST,
                         //"/api/clients/**",
                         "/api/clients/current/accounts",
-                        "/api/clients/current/cards").hasAuthority("CLIENT")
+                        "/api/clients/current/cards",
+                        "/api/transactions").hasAuthority("CLIENT")
 
                 //CLIENT
                 .antMatchers("/web/account.html**",
@@ -51,13 +52,14 @@ public class WebAuthorization {
                         "/web/loan-application.html",
                         "/api/clients/current",
                         "/api/accounts/**",
-                        "/web/create-cards.html").hasAuthority("CLIENT")
+                        "/web/create-cards.html",
+                        "/api/clients/current/accounts").hasAuthority("CLIENT")
 
                 //ADMIN
                 .antMatchers("/admin/**",
                         "/manager.html",
                         "/rest/**",
-                        //"/h2-console/**",
+                        "/h2-console/**",
                         "/h2-console").hasAuthority("ADMIN")
 
                 //Denies permission to all requests that have not been explicitly granted.
