@@ -10,12 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.mindhub.homebanking.repositories.CardRepository;
-import com.mindhub.homebanking.dtos.ClientDTO;
 import org.springframework.security.core.Authentication;
 import com.mindhub.homebanking.repositories.ClientRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -37,7 +35,7 @@ public class CardController {
     private static Set<String> existingCardNumbers = new HashSet<>();
 
     // -------------------- Additional methods --------------------
-    // Returns a list of all cards data
+    // Return a list of all cards data
     @RequestMapping("/cards")
     public List<CardDTO> getCards() {
         return cardRepository.findAll().stream()
@@ -45,7 +43,7 @@ public class CardController {
                 .collect(toList());
     }
 
-    // Returns data from an specific card
+    // Return data from an specific card
     @RequestMapping("/cards/{id}")
     public CardDTO getCard(@PathVariable Long id){
         return cardRepository.findById(id)
@@ -53,14 +51,14 @@ public class CardController {
                 .orElse(null);
     }
 
-    // Generates a new card
+    // Generate a new card
     @RequestMapping(path = "/clients/current/cards", method = RequestMethod.POST)
     public ResponseEntity<Object> addCard(Authentication authentication, @RequestParam CardColor cardColor, CardType cardType) {
 
-        // Gets current client
+        // Get current client
         Client currentClient = clientRepository.findByEmail(authentication.getName());
 
-        // Checks if the client has three cards of the requested card type
+        // Check if the client has three cards of the requested card type
         if (!currentClient.getCards().stream()
                 .filter(card -> card.getType() == cardType)
                 .filter(card -> card.getColor() == cardColor)
@@ -70,29 +68,25 @@ public class CardController {
             LocalDate actualDate = LocalDate.now();
             LocalDate thruDate = actualDate.plusYears(5);
 
-            // Generates new card number
+            // Generate new card number
             String newCardNumber = generateCardNumber();
 
-            // Adds new cardNumber to Set existingCardNumbers
+            // Add new cardNumber to Set existingCardNumbers
             existingCardNumbers.add(newCardNumber);
 
-            // Generates new CVV number
+            // Generate new CVV number
             short cvv = generateCVV();
 
-            // Creates card object
+            // Create card object
             Card newCard = new Card(cardType, newCardNumber, cvv, actualDate, thruDate, currentClient.getFirstName() + " " + currentClient.getLastName(), cardColor);
 
-            // Adds card to current client
+            // Add card to current client
             currentClient.addCard(newCard);
 
-            // Saves card
+            // Save card
             cardRepository.save(newCard);
 
-            // NO
-            // Saves client
-            //clientRepository.save(currentClient);
-
-            // Returns responseEntity with status 201
+            // Return responseEntity with status 201
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
 

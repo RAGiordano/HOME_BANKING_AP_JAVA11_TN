@@ -20,32 +20,32 @@ public class WebAuthorization {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.authorizeRequests()
-                //ALL
+                // ALL
                 .antMatchers("/web/index.html",
                         "/web/css/style.css",
                         "/web/js/index.js",
                         "/web/img/**").permitAll()
 
-                //ALL (POST)
+                // ALL (POST)
                 .antMatchers(HttpMethod.POST,
                         "/api/login",
                         "/api/logout",
                         "/api/clients").permitAll()
 
-                //CLIENT AND ADMIN
+                // CLIENT AND ADMIN
                 .antMatchers("/logout.html",
                         "/web/accounts.html",
                         "/web/css/**",
                         "/web/js/**").hasAnyAuthority("CLIENT", "ADMIN")
 
-                //CLIENT (POST)
+                // CLIENT (POST)
                 .antMatchers(HttpMethod.POST,
                         //"/api/clients/**",
                         "/api/clients/current/accounts",
                         "/api/clients/current/cards",
                         "/api/transactions").hasAuthority("CLIENT")
 
-                //CLIENT
+                // CLIENT
                 .antMatchers("/web/account.html**",
                         "/web/cards.html",
                         "/web/transfers.html",
@@ -55,14 +55,14 @@ public class WebAuthorization {
                         "/web/create-cards.html",
                         "/api/clients/current/accounts").hasAuthority("CLIENT")
 
-                //ADMIN
+                // ADMIN
                 .antMatchers("/admin/**",
                         "/manager.html",
                         "/rest/**",
                         "/h2-console/**",
                         "/h2-console").hasAuthority("ADMIN")
 
-                //Denies permission to all requests that have not been explicitly granted.
+                // Deny permission to all requests that have not been explicitly granted.
                 .anyRequest().denyAll();
 
 
@@ -77,31 +77,31 @@ public class WebAuthorization {
         http.logout().logoutUrl("/api/logout").deleteCookies("JSESSIONID");
 
 
-        // turn off checking for CSRF tokens
+        // Turn off checking for CSRF tokens
 
         http.csrf().disable();
 
 
 
-        //disabling frameOptions so h2-console can be accessed
+        // Disable frameOptions so h2-console can be accessed
 
         http.headers().frameOptions().disable();
         //httpSecurity.headers().frameOptions().disable();
         //http.headers().disable();
 
-        // if user is not authenticated, just send an authentication failure response
+        // If user is not authenticated, just send an authentication failure response
 
         http.exceptionHandling().authenticationEntryPoint((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
 
-        // if login is successful, just clear the flags asking for authentication
+        // If login is successful, just clear the flags asking for authentication
 
         http.formLogin().successHandler((req, res, auth) -> clearAuthenticationAttributes(req));
 
-        // if login fails, just send an authentication failure response
+        // If login fails, just send an authentication failure response
 
         http.formLogin().failureHandler((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
 
-        // if logout is successful, just send a success response
+        // If logout is successful, just send a success response
 
         http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
 

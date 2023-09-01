@@ -35,7 +35,7 @@ public class ClientController {
     private AccountRepository accountRepository;
 
     // -------------------- Additional methods --------------------
-    //Returns the list of all clients data
+    // Return the list of all clients data
     @RequestMapping("/clients")
     public List<ClientDTO> getClients() {
         return clientRepository.findAll().stream()
@@ -43,7 +43,7 @@ public class ClientController {
                 .collect(toList());
     }
 
-    // Returns data of a specific client (by id)
+    // Return data of a specific client (by id)
     @RequestMapping("/clients/{id}")
     public ClientDTO getClient(@PathVariable Long id) {
         return clientRepository.findById(id)
@@ -86,22 +86,22 @@ public class ClientController {
             return new ResponseEntity<>("E-mail already in use", HttpStatus.FORBIDDEN);
         }
 
-        // Creates Client object with default role type "CLIENT"
+        // Create Client object with default role type "CLIENT"
         Client newClient = new Client(firstName, lastName, email, passwordEncoder.encode(password), ClientRoleType.CLIENT);
 
-        // Calls static method generateNewAccountNumber in AccountController to generate a non-repeated account number
+        // Call static method generateNewAccountNumber in AccountController to generate a non-repeated account number
         String accountNumber = AccountController.generateNewAccountNumber();
 
-        // Saves client in the database and generates its primary key
+        // Save client in the database and generates its primary key
         clientRepository.save(newClient);
 
-        // Creates first account for the new client
+        // Create first account for the new client
         Account account1 = new Account(accountNumber, LocalDate.now(), 0);
 
-        // Adds account to current client
+        // Add account to current client
         newClient.addAccount(account1);
 
-        // Saves account in the database and generates its primary key
+        // Save account in the database and generates its primary key
         accountRepository.save(account1);
 
         return new ResponseEntity<>(HttpStatus.CREATED);

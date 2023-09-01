@@ -2,7 +2,6 @@ package com.mindhub.homebanking.controllers;
 
 import com.mindhub.homebanking.dtos.AccountDTO;
 import com.mindhub.homebanking.models.Account;
-import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -46,7 +44,7 @@ public class AccountController {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         if (account != null) {
-            //Checks if the account belongs to the current client
+            // Check if the account belongs to the current client
             if (clientRepository.findByEmail(authentication.getName()).getAccounts().contains(account)) {
                 return new ResponseEntity<>(new AccountDTO(account), HttpStatus.OK);
             } else {
@@ -64,27 +62,27 @@ public class AccountController {
 
     @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
     public ResponseEntity<Object> addAccount(Authentication authentication) {
-        //Checks if the client has 3 accounts.
+        // Check if the client has 3 accounts.
         if (clientRepository.findByEmail(authentication.getName()).getAccounts().size() >= 3) {
             return new ResponseEntity<>("The account cannot be added. The maximum allowed is three accounts per client.", HttpStatus.FORBIDDEN);
         } else {
-            //Calls function accountNumberGenerator to generate a non-repeated account number
+            // Call function accountNumberGenerator to generate a non-repeated account number
             String accountNumber = generateNewAccountNumber();
 
-            //Creates account
+            // Create account
             Account account1 = new Account(accountNumber, LocalDate.now(), 0);
 
-            //Adds account to current client
+            // Add account to current client
             clientRepository.findByEmail(authentication.getName()).addAccount(account1);
 
-            //Saves account
+            // Save account
             accountRepository.save(account1);
 
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
     }
 
-    //Generates a non-repeated account number
+    // Generate a non-repeated account number
     public static String generateNewAccountNumber() {
         Random random = new Random();
         String newAccountNumber;

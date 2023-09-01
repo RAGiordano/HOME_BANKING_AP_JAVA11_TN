@@ -28,11 +28,11 @@ public class WebAuthentication extends GlobalAuthenticationConfigurerAdapter {
 
             if (client != null) {
                 if (client.getRole().equals(ClientRoleType.ADMIN)){
-                    //ADMIN
+                    // ADMIN
                     return new User(client.getEmail(), client.getPassword(),
                             AuthorityUtils.createAuthorityList("ADMIN"));
                 } else if (client.getRole().equals(ClientRoleType.CLIENT)){
-                    //CLIENT
+                    // CLIENT
                     return new User(client.getEmail(), client.getPassword(),
                             AuthorityUtils.createAuthorityList("CLIENT"));
                 } else {
