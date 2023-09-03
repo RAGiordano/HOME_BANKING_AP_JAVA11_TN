@@ -6,6 +6,7 @@ import com.mindhub.homebanking.models.ClientRoleType;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.dtos.ClientDTO;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,8 +26,9 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping("/api")
 public class ClientController {
     // -------------------- Attributes --------------------
+
     @Autowired
-    private ClientRepository clientRepository;
+    ClientService clientService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -38,17 +40,13 @@ public class ClientController {
     // Return the list of all clients data
     @RequestMapping("/clients")
     public List<ClientDTO> getClients() {
-        return clientRepository.findAll().stream()
-                .map(client -> new ClientDTO(client))
-                .collect(toList());
+        return clientService.findAllClients();
     }
 
     // Return data of a specific client (by id)
     @RequestMapping("/clients/{id}")
     public ClientDTO getClient(@PathVariable Long id) {
-        return clientRepository.findById(id)
-                .map(client -> new ClientDTO(client))
-                .orElse(null);
+        return clientService.findClientById(id);
     }
 
     @RequestMapping(path = "/clients", method = RequestMethod.POST)
@@ -82,7 +80,7 @@ public class ClientController {
             return new ResponseEntity<>("Password is required", HttpStatus.FORBIDDEN);
         }
 
-        if (clientRepository.findByEmail(email) !=  null) {
+        if (clientService.findClientByEmail(email) !=  null) {
             return new ResponseEntity<>("E-mail already in use", HttpStatus.FORBIDDEN);
         }
 
@@ -93,7 +91,7 @@ public class ClientController {
         String accountNumber = AccountController.generateNewAccountNumber();
 
         // Save client in the database and generates its primary key
-        clientRepository.save(newClient);
+        clientService.saveClient(newClient);
 
         // Create first account for the new client
         Account account1 = new Account(accountNumber, LocalDate.now(), 0);
@@ -109,6 +107,6 @@ public class ClientController {
 
     @RequestMapping(path = "/clients/current")
     public ClientDTO getCurrentClient(Authentication authentication) {
-        return new ClientDTO(clientRepository.findByEmail(authentication.getName()));
+        return new ClientDTO(clientService.findClientByEmail(authentication.getName()));
     }
 }

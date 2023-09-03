@@ -43,17 +43,19 @@ public class WebAuthorization {
                         //"/api/clients/**",
                         "/api/clients/current/accounts",
                         "/api/clients/current/cards",
-                        "/api/transactions").hasAuthority("CLIENT")
+                        "/api/transactions",
+                        "/api/loans").hasAuthority("CLIENT")
 
                 // CLIENT
                 .antMatchers("/web/account.html**",
                         "/web/cards.html",
                         "/web/transfers.html",
                         "/web/loan-application.html",
+                        "/web/create-cards.html",
                         "/api/clients/current",
                         "/api/accounts/**",
-                        "/web/create-cards.html",
-                        "/api/clients/current/accounts").hasAuthority("CLIENT")
+                        "/api/clients/current/accounts",
+                        "/api/loans").hasAuthority("CLIENT")
 
                 // ADMIN
                 .antMatchers("/admin/**",

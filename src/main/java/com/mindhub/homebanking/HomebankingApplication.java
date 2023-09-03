@@ -75,13 +75,13 @@ public class HomebankingApplication {
 			accountRepository.save(account6);
 
 			// Creates Transaction objects
-			Transaction transaction1 = new Transaction(TransactionType.CREDIT, 1200000, "Transferencia Banco Nación", actualDateTime);
-			Transaction transaction2 = new Transaction(TransactionType.DEBIT, -150000, "Débito automático servicios", actualDateTime);
-			Transaction transaction3 = new Transaction(TransactionType.CREDIT, 30000, "Depósito cajero", actualDateTime);
-			Transaction transaction4 = new Transaction(TransactionType.CREDIT, 100000, "Transferencia Banco Macro", actualDateTime);
-			Transaction transaction5 = new Transaction(TransactionType.CREDIT, 920000, "Transferencia Banco Hipotecario", actualDateTime);
-			Transaction transaction6 = new Transaction(TransactionType.CREDIT, 500000, "Transferencia Banco Industrial", actualDateTime);
-			Transaction transaction7 = new Transaction(TransactionType.DEBIT, -20000, "Pago servicios", actualDateTime);
+			Transaction transaction1 = new Transaction(TransactionType.CREDIT, 1200000, "Galicia bank transfer", actualDateTime);
+			Transaction transaction2 = new Transaction(TransactionType.DEBIT, -150000, "Service debit", actualDateTime);
+			Transaction transaction3 = new Transaction(TransactionType.CREDIT, 30000, "ATM deposit", actualDateTime);
+			Transaction transaction4 = new Transaction(TransactionType.CREDIT, 100000, "Macro Bank transfer", actualDateTime);
+			Transaction transaction5 = new Transaction(TransactionType.CREDIT, 920000, "Galicia Bank transfer", actualDateTime);
+			Transaction transaction6 = new Transaction(TransactionType.CREDIT, 500000, "Industrial Bank transfer", actualDateTime);
+			Transaction transaction7 = new Transaction(TransactionType.DEBIT, -20000, "Service debit", actualDateTime);
 
 			// Adds each transaction to its account
 			account1.addTransaction(transaction1);
@@ -102,9 +102,9 @@ public class HomebankingApplication {
 			transactionRepository.save(transaction7);
 
 			// Creates Loan objects
-			Loan loan1 = new Loan("Hipotecario", 500000, List.of((short) 12, (short) 24, (short) 36, (short) 48, (short) 60));
-			Loan loan2 = new Loan("Personal", 100000, List.of((short) 6, (short) 12, (short) 24));
-			Loan loan3 = new Loan("Automotriz", 300000, List.of((short) 6, (short) 12, (short) 24, (short) 36));
+			Loan loan1 = new Loan("Mortgage Loan", 500000, List.of((short) 12, (short) 24, (short) 36, (short) 48, (short) 60));
+			Loan loan2 = new Loan("Personal Loan", 100000, List.of((short) 6, (short) 12, (short) 24));
+			Loan loan3 = new Loan("Car Loan", 300000, List.of((short) 6, (short) 12, (short) 24, (short) 36));
 
 			// Saves loans in the database and generates its primary keys
 			loanRepository.save(loan1);

@@ -8,5 +8,5 @@ import java.util.List;
 
 @RepositoryRestResource
 public interface LoanRepository extends JpaRepository<Loan, Long> {
-    List<Loan> findById(long id);
+    Loan findById(long id);
 }

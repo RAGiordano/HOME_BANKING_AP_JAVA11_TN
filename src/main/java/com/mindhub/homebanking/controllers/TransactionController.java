@@ -64,7 +64,7 @@ public class TransactionController {
             return new ResponseEntity<>("The source account does not exist", HttpStatus.FORBIDDEN);
         }
 
-        // Check that the source account belongs to the authenticated customer
+        // Check that the source account belongs to the authenticated client
         if (currentClient.getAccounts().stream().filter(account -> account.getNumber()
                 .equals(fromAccountNumber)).count() == 0) {
 
@@ -81,6 +81,9 @@ public class TransactionController {
             return new ResponseEntity<>("Insufficient funds in the account to complete the transfer", HttpStatus.FORBIDDEN);
         }
 
+
+        // --- TRANSACTION APPROVED ---
+
         // Create Transaction objects
         Transaction debitTransaction = new Transaction(TransactionType.DEBIT, (amount * (-1)), description + " (" + toAccountNumber +")", LocalDateTime.now());
         Transaction creditTransaction = new Transaction(TransactionType.CREDIT, amount, description + " (" + fromAccountNumber + ")", LocalDateTime.now());
@@ -89,7 +92,7 @@ public class TransactionController {
         fromAccount.addTransaction(debitTransaction);
         toAccount.addTransaction(creditTransaction);
 
-        // Save transactions in the database and generates its primary keys
+        // Save transactions in the database and generate its primary keys
         transactionRepository.save(debitTransaction);
         transactionRepository.save(creditTransaction);
 
