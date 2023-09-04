@@ -4,9 +4,9 @@ import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.models.Transaction;
 import com.mindhub.homebanking.models.TransactionType;
-import com.mindhub.homebanking.repositories.AccountRepository;
-import com.mindhub.homebanking.repositories.ClientRepository;
-import com.mindhub.homebanking.repositories.TransactionRepository;
+import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.ClientService;
+import com.mindhub.homebanking.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +25,16 @@ public class TransactionController {
 
     // -------------------- Attributes --------------------
     @Autowired
-    private ClientRepository clientRepository;
+    ClientService clientService;
 
     @Autowired
-    private AccountRepository accountRepository;
+    AccountService accountService;
 
     @Autowired
-    private TransactionRepository transactionRepository;
+    TransactionService transactionService;
 
 
-    // -------------------- Additional methods --------------------
+    // --------------------- Methods ----------------------
     @Transactional
     @RequestMapping(path = "/transactions", method = RequestMethod.POST)
     public ResponseEntity<Object> register(
@@ -44,9 +44,9 @@ public class TransactionController {
             @RequestParam String fromAccountNumber,
             @RequestParam String toAccountNumber) {
 
-        Account fromAccount = accountRepository.findByNumber(fromAccountNumber);
-        Account toAccount = accountRepository.findByNumber(toAccountNumber);
-        Client currentClient = clientRepository.findByEmail(authentication.getName());
+        Account fromAccount = accountService.findAccountByNumber(fromAccountNumber);
+        Account toAccount = accountService.findAccountByNumber(toAccountNumber);
+        Client currentClient = clientService.findClientByEmail(authentication.getName());
 
 
         // Check that the parameters are not empty.
@@ -93,8 +93,8 @@ public class TransactionController {
         toAccount.addTransaction(creditTransaction);
 
         // Save transactions in the database and generate its primary keys
-        transactionRepository.save(debitTransaction);
-        transactionRepository.save(creditTransaction);
+        transactionService.saveTransaction(debitTransaction);
+        transactionService.saveTransaction(creditTransaction);
 
         // Update accounts balance
         fromAccount.setBalance(fromAccount.getBalance() - amount);

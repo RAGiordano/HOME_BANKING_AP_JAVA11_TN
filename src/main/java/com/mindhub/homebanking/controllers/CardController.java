@@ -5,13 +5,13 @@ import com.mindhub.homebanking.models.Card;
 import com.mindhub.homebanking.models.CardColor;
 import com.mindhub.homebanking.models.CardType;
 import com.mindhub.homebanking.models.Client;
+import com.mindhub.homebanking.services.CardService;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.mindhub.homebanking.repositories.CardRepository;
 import org.springframework.security.core.Authentication;
-import com.mindhub.homebanking.repositories.ClientRepository;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -20,35 +20,31 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api")
 public class CardController {
     // -------------------- Attributes --------------------
     @Autowired
-    private CardRepository cardRepository;
+    private CardService cardService;
 
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
+
 
     private static Set<String> existingCardNumbers = new HashSet<>();
 
-    // -------------------- Additional methods --------------------
+    // --------------------- Methods ----------------------
     // Return a list of all cards data
     @RequestMapping("/cards")
     public List<CardDTO> getCards() {
-        return cardRepository.findAll().stream()
-                .map(account -> new CardDTO(account))
-                .collect(toList());
+        return cardService.findAllCards();
     }
 
     // Return data from an specific card
     @RequestMapping("/cards/{id}")
     public CardDTO getCard(@PathVariable Long id){
-        return cardRepository.findById(id)
-                .map(account ->new CardDTO(account))
-                .orElse(null);
+        return cardService.findCardById(id);
     }
 
     // Generate a new card
@@ -56,7 +52,7 @@ public class CardController {
     public ResponseEntity<Object> addCard(Authentication authentication, @RequestParam CardColor cardColor, CardType cardType) {
 
         // Get current client
-        Client currentClient = clientRepository.findByEmail(authentication.getName());
+        Client currentClient = clientService.findClientByEmail(authentication.getName());
 
         // Check if the client has three cards of the requested card type
         if (!currentClient.getCards().stream()
@@ -84,7 +80,7 @@ public class CardController {
             currentClient.addCard(newCard);
 
             // Save card
-            cardRepository.save(newCard);
+            cardService.saveCard(newCard);
 
             // Return responseEntity with status 201
             return new ResponseEntity<>(HttpStatus.CREATED);

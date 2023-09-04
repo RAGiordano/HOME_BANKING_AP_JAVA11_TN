@@ -11,7 +11,6 @@ public class TransactionDTO {
     private double amount;
     private String description;
     private LocalDateTime date;
-    //private Account account;
 
     // -------------------- Constructors --------------------
     public TransactionDTO(Transaction transaction) {

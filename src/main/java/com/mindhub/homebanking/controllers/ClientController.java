@@ -3,9 +3,8 @@ package com.mindhub.homebanking.controllers;
 import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.models.ClientRoleType;
-import com.mindhub.homebanking.repositories.AccountRepository;
-import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.dtos.ClientDTO;
+import com.mindhub.homebanking.services.AccountService;
 import com.mindhub.homebanking.services.ClientService;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +19,20 @@ import java.util.regex.Pattern;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @RestController
 @RequestMapping("/api")
 public class ClientController {
     // -------------------- Attributes --------------------
+    @Autowired
+    private ClientService clientService;
 
     @Autowired
-    ClientService clientService;
+    private AccountService accountService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AccountRepository accountRepository;
-
-    // -------------------- Additional methods --------------------
+    // --------------------- Methods ----------------------
     // Return the list of all clients data
     @RequestMapping("/clients")
     public List<ClientDTO> getClients() {
@@ -93,14 +89,16 @@ public class ClientController {
         // Save client in the database and generates its primary key
         clientService.saveClient(newClient);
 
+        LocalDate actualDate = LocalDate.now();
+
         // Create first account for the new client
-        Account account1 = new Account(accountNumber, LocalDate.now(), 0);
+        Account newAccount = new Account(accountNumber, actualDate, 0);
 
         // Add account to current client
-        newClient.addAccount(account1);
+        newClient.addAccount(newAccount);
 
         // Save account in the database and generates its primary key
-        accountRepository.save(account1);
+        accountService.saveAccount(newAccount);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

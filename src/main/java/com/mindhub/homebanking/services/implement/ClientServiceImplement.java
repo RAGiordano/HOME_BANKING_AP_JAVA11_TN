@@ -5,18 +5,20 @@ import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+@Service
 public class ClientServiceImplement implements ClientService {
     // -------------------- Attributes --------------------
     @Autowired
     private ClientRepository clientRepository;
 
 
-    // -------------------- Methods --------------------
+    // --------------------- Methods ----------------------
     @Override
     public List<ClientDTO> findAllClients() {
         return clientRepository.findAll().stream()
@@ -26,9 +28,7 @@ public class ClientServiceImplement implements ClientService {
 
     @Override
     public ClientDTO findClientById(Long id){
-        return clientRepository.findById(id)
-                .map(client -> new ClientDTO(client))
-                .orElse(null);
+        return new ClientDTO(clientRepository.findById(id).orElse(null));
     }
 
     @Override

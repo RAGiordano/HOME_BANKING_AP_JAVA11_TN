@@ -3,7 +3,7 @@ package com.mindhub.homebanking;
 import com.mindhub.homebanking.controllers.AccountController;
 import com.mindhub.homebanking.controllers.CardController;
 import com.mindhub.homebanking.models.*;
-import com.mindhub.homebanking.repositories.*;
+import com.mindhub.homebanking.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,12 +28,12 @@ public class HomebankingApplication {
 
 	@Bean
 	public CommandLineRunner initData(
-			ClientRepository clientRepository,
-			AccountRepository accountRepository,
-			TransactionRepository transactionRepository,
-			LoanRepository loanRepository,
-			ClientLoanRepository clientLoanRepository,
-			CardRepository cardRepository) {
+			ClientService clientService,
+			AccountService accountService,
+			TransactionService transactionService,
+			LoanService loanService,
+			ClientLoanService clientLoanService,
+			CardService cardService) {
 		return (args) -> {
 			LocalDate actualDate = LocalDate.now();
 			LocalDate tomorrowDate = actualDate.plusDays(1);
@@ -54,9 +54,9 @@ public class HomebankingApplication {
 			Account account6 = new Account(AccountController.generateNewAccountNumber(), actualDate, 90000000);
 
 			// Saves clients in the database and generates their primary keys.
-			clientRepository.save(client1);
-			clientRepository.save(client2);
-			clientRepository.save(client3);
+			clientService.saveClient(client1);
+			clientService.saveClient(client2);
+			clientService.saveClient(client3);
 
 			// Adds each account to its client
 			client1.addAccount(account1);
@@ -67,12 +67,12 @@ public class HomebankingApplication {
 			client3.addAccount(account6);
 
 			// Saves accounts in the database and generates its primary keys.
-			accountRepository.save(account1);
-			accountRepository.save(account2);
-			accountRepository.save(account3);
-			accountRepository.save(account4);
-			accountRepository.save(account5);
-			accountRepository.save(account6);
+			accountService.saveAccount(account1);
+			accountService.saveAccount(account2);
+			accountService.saveAccount(account3);
+			accountService.saveAccount(account4);
+			accountService.saveAccount(account5);
+			accountService.saveAccount(account6);
 
 			// Creates Transaction objects
 			Transaction transaction1 = new Transaction(TransactionType.CREDIT, 1200000, "Galicia bank transfer", actualDateTime);
@@ -93,13 +93,13 @@ public class HomebankingApplication {
 			account3.addTransaction(transaction7);
 
 			// Saves transactions in the database and generates its primary keys
-			transactionRepository.save(transaction1);
-			transactionRepository.save(transaction2);
-			transactionRepository.save(transaction3);
-			transactionRepository.save(transaction4);
-			transactionRepository.save(transaction5);
-			transactionRepository.save(transaction6);
-			transactionRepository.save(transaction7);
+			transactionService.saveTransaction(transaction1);
+			transactionService.saveTransaction(transaction2);
+			transactionService.saveTransaction(transaction3);
+			transactionService.saveTransaction(transaction4);
+			transactionService.saveTransaction(transaction5);
+			transactionService.saveTransaction(transaction6);
+			transactionService.saveTransaction(transaction7);
 
 			// Creates Loan objects
 			Loan loan1 = new Loan("Mortgage Loan", 500000, List.of((short) 12, (short) 24, (short) 36, (short) 48, (short) 60));
@@ -107,9 +107,9 @@ public class HomebankingApplication {
 			Loan loan3 = new Loan("Car Loan", 300000, List.of((short) 6, (short) 12, (short) 24, (short) 36));
 
 			// Saves loans in the database and generates its primary keys
-			loanRepository.save(loan1);
-			loanRepository.save(loan2);
-			loanRepository.save(loan3);
+			loanService.saveLoan(loan1);
+			loanService.saveLoan(loan2);
+			loanService.saveLoan(loan3);
 
 			// Creates ClientLoan objects
 			ClientLoan clientLoan1 = new ClientLoan(400000, (short) 60, client1, loan1);
@@ -118,10 +118,10 @@ public class HomebankingApplication {
 			ClientLoan clientLoan4 = new ClientLoan(200000, (short) 36, client2, loan3);
 
 			// Saves clientLoans in the database and generates its primary keys
-			clientLoanRepository.save(clientLoan1);
-			clientLoanRepository.save(clientLoan2);
-			clientLoanRepository.save(clientLoan3);
-			clientLoanRepository.save(clientLoan4);
+			clientLoanService.saveClientLoan(clientLoan1);
+			clientLoanService.saveClientLoan(clientLoan2);
+			clientLoanService.saveClientLoan(clientLoan3);
+			clientLoanService.saveClientLoan(clientLoan4);
 
 			// Adds each clientLoan to its client
 			client1.addClientLoan(clientLoan1);
@@ -140,9 +140,9 @@ public class HomebankingApplication {
 			client2.addCard(card3);
 
 			// Saves cards in the database and generates its primary keys
-			cardRepository.save(card1);
-			cardRepository.save(card2);
-			cardRepository.save(card3);
+			cardService.saveCard(card1);
+			cardService.saveCard(card2);
+			cardService.saveCard(card3);
 		};
 
 	}
