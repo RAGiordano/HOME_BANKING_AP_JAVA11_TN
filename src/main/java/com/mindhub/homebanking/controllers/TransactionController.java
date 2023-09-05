@@ -25,13 +25,13 @@ public class TransactionController {
 
     // -------------------- Attributes --------------------
     @Autowired
-    ClientService clientService;
+    private ClientService clientService;
 
     @Autowired
-    AccountService accountService;
+    private AccountService accountService;
 
     @Autowired
-    TransactionService transactionService;
+    private TransactionService transactionService;
 
 
     // --------------------- Methods ----------------------
