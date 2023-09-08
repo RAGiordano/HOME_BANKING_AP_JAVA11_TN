@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -53,7 +54,8 @@ public class AccountController {
 
     @RequestMapping(path = "/clients/current/accounts")
     public ResponseEntity<Object> getAccounts(Authentication authentication) {
-            return new ResponseEntity<>(clientService.findClientByEmail(authentication.getName()).getAccounts(), HttpStatus.OK);
+            return new ResponseEntity<>(clientService.findClientByEmail(authentication.getName()).getAccounts()
+                    .stream().map(account -> new AccountDTO(account)).collect(Collectors.toSet()), HttpStatus.OK);
     }
 
     @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)

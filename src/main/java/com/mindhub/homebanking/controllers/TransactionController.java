@@ -44,11 +44,6 @@ public class TransactionController {
             @RequestParam String fromAccountNumber,
             @RequestParam String toAccountNumber) {
 
-        Account fromAccount = accountService.findAccountByNumber(fromAccountNumber);
-        Account toAccount = accountService.findAccountByNumber(toAccountNumber);
-        Client currentClient = clientService.findClientByEmail(authentication.getName());
-
-
         // Check that the parameters are not empty.
         if (amount == null || description == null || fromAccountNumber == null || toAccountNumber == null) {
             return new ResponseEntity<>("All parameters are required", HttpStatus.FORBIDDEN);
@@ -59,15 +54,17 @@ public class TransactionController {
             return new ResponseEntity<>("The source and destination accounts must be different", HttpStatus.FORBIDDEN);
         }
 
+        Account fromAccount = accountService.findAccountByNumber(fromAccountNumber);
+        Account toAccount = accountService.findAccountByNumber(toAccountNumber);
+        Client currentClient = clientService.findClientByEmail(authentication.getName());
+
         // Check that the source account exists
         if (fromAccount == null) {
             return new ResponseEntity<>("The source account does not exist", HttpStatus.FORBIDDEN);
         }
 
         // Check that the source account belongs to the authenticated client
-        if (currentClient.getAccounts().stream().filter(account -> account.getNumber()
-                .equals(fromAccountNumber)).count() == 0) {
-
+        if (currentClient.getAccounts().contains(fromAccount)) {
             return new ResponseEntity<>("The source account does not belong to current client", HttpStatus.FORBIDDEN);
         }
 

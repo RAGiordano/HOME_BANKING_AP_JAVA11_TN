@@ -2,6 +2,7 @@ package com.mindhub.homebanking.models;
 
 import javax.persistence.*;
 
+import com.mindhub.homebanking.dtos.AccountDTO;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
