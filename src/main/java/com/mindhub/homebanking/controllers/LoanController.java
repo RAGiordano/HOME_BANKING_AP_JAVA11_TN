@@ -10,13 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @RestController
 @RequestMapping("/api")
@@ -38,20 +37,20 @@ public class LoanController {
     private TransactionService transactionService;
 
     // --------------------- Methods ----------------------
-    @RequestMapping("/loans") //GetMapping("/loans")
+    @GetMapping("/loans")
     public List<LoanDTO> getLoans() {
         return loanService.findAllLoans();
     }
 
     @Transactional
-    @RequestMapping(value="/loans", method = RequestMethod.POST) //PostMapping(value="/loans")
+    @PostMapping("/loans")
     public ResponseEntity<Object> addLoan(Authentication authentication,
                                           @RequestBody LoanApplicationDTO loanApplicationDTO) {
 
         double amount = loanApplicationDTO.getAmount();
 
         // Check that the parameters are not empty.
-        if (loanApplicationDTO.getLoanId() == 0 || amount == 0 || loanApplicationDTO.getPayments() == 0 || loanApplicationDTO.getToAccountNumber().isEmpty()) {
+        if (loanApplicationDTO.getLoanId() == 0 || amount == 0 || loanApplicationDTO.getPayments() == 0 || isNull(loanApplicationDTO.getPayments()) || isNull(loanApplicationDTO.getToAccountNumber()) || loanApplicationDTO.getToAccountNumber().isEmpty()) {
             return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
         }
 
@@ -62,7 +61,7 @@ public class LoanController {
 
         // Check that the loan exist
         if (!loanService.existsLoanById(loanApplicationDTO.getLoanId())) {
-            return new ResponseEntity<>("No Loan matches the requested ID", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("No loan matches the requested ID", HttpStatus.FORBIDDEN);
         }
 
         Loan loan = loanService.findLoanById(loanApplicationDTO.getLoanId()).orElse(null);

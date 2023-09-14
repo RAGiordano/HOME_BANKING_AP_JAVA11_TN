@@ -34,18 +34,18 @@ public class ClientController {
 
     // --------------------- Methods ----------------------
     // Return the list of all clients data
-    @RequestMapping("/clients")
+    @GetMapping("/clients")
     public List<ClientDTO> getClients() {
         return clientService.findAllClients();
     }
 
     // Return data of a specific client (by id)
-    @RequestMapping("/clients/{id}")
+    @GetMapping("/clients/{id}")
     public ClientDTO getClient(@PathVariable Long id) {
         return clientService.findClientById(id);
     }
 
-    @RequestMapping(path = "/clients", method = RequestMethod.POST)
+    @PostMapping("/clients")
     public ResponseEntity<Object> register(
             @RequestParam String firstName,
             @RequestParam String lastName,
@@ -80,30 +80,36 @@ public class ClientController {
             return new ResponseEntity<>("E-mail already in use", HttpStatus.FORBIDDEN);
         }
 
-        // Create Client object with default role type "CLIENT"
-        Client newClient = new Client(firstName, lastName, email, passwordEncoder.encode(password), ClientRoleType.CLIENT);
+        try {
+            // Create Client object with default role type "CLIENT"
+            Client newClient = new Client(firstName, lastName, email, passwordEncoder.encode(password), ClientRoleType.CLIENT);
 
-        // Call static method generateNewAccountNumber in AccountController to generate a non-repeated account number
-        String accountNumber = AccountController.generateNewAccountNumber();
+            // Call static method generateNewAccountNumber in AccountController to generate a non-repeated account number
+            String accountNumber = AccountController.generateNewAccountNumber();
 
-        // Save client in the database and generates its primary key
-        clientService.saveClient(newClient);
+            // Save client in the database and generates its primary key
+            clientService.saveClient(newClient);
 
-        LocalDate actualDate = LocalDate.now();
+            LocalDate actualDate = LocalDate.now();
 
-        // Create first account for the new client
-        Account newAccount = new Account(accountNumber, actualDate, 0);
+            // Create first account for the new client
+            Account newAccount = new Account(accountNumber, actualDate, 0);
 
-        // Add account to current client
-        newClient.addAccount(newAccount);
+            // Add account to current client
+            newClient.addAccount(newAccount);
 
-        // Save account in the database and generates its primary key
-        accountService.saveAccount(newAccount);
+            // Save account in the database and generates its primary key
+            accountService.saveAccount(newAccount);
+
+        // Invalid password exception
+        } catch (IllegalArgumentException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.FORBIDDEN);
+        }
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "/clients/current")
+    @GetMapping("/clients/current")
     public ClientDTO getCurrentClient(Authentication authentication) {
         return new ClientDTO(clientService.findClientByEmail(authentication.getName()));
     }

@@ -45,7 +45,7 @@ public class Client {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
+        this.password = passwordValidator(password);
         this.role = role;
     }
 
@@ -83,7 +83,7 @@ public class Client {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = passwordValidator(password);
     }
 
     public ClientRoleType getRole() {
@@ -129,6 +129,16 @@ public class Client {
     public void addCard(Card card){
         card.setClient(this);
         cards.add(card);
+    }
+
+    public static String passwordValidator (String password) throws IllegalArgumentException {
+        String pass = password;
+
+        if (!pass.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%&*])[A-Za-z\\d!@#$%&*]{8,}$")) {
+            throw new IllegalArgumentException("Invalid Password");
+        }
+
+        return pass;
     }
 
     // -------------------- toString method --------------------

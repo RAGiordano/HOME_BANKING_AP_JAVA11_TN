@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -30,12 +27,12 @@ public class AccountController {
     private static Set<String> existingAccountNumbers = new HashSet<>();
 
     // --------------------- Methods ----------------------
-    @RequestMapping("/accounts")
+    @GetMapping("/accounts")
     public List<AccountDTO> getAccounts() {
         return accountService.findAllAccounts();
     }
 
-    @RequestMapping("/accounts/{id}")
+    @GetMapping("/accounts/{id}")
     public ResponseEntity<Object> getAccount(@PathVariable Long id, Authentication authentication) {
         Account account = accountService.findAccountByID(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -52,13 +49,13 @@ public class AccountController {
         }
     }
 
-    @RequestMapping(path = "/clients/current/accounts")
+    @GetMapping("/clients/current/accounts")
     public ResponseEntity<Object> getAccounts(Authentication authentication) {
             return new ResponseEntity<>(clientService.findClientByEmail(authentication.getName()).getAccounts()
                     .stream().map(account -> new AccountDTO(account)).collect(Collectors.toSet()), HttpStatus.OK);
     }
 
-    @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
+    @PostMapping("/clients/current/accounts")
     public ResponseEntity<Object> addAccount(Authentication authentication) {
         // Check if the client has 3 accounts.
         if (clientService.findClientByEmail(authentication.getName()).getAccounts().size() >= 3) {

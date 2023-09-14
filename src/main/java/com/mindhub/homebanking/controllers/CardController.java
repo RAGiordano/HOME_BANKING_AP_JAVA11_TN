@@ -7,6 +7,7 @@ import com.mindhub.homebanking.models.CardType;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.services.CardService;
 import com.mindhub.homebanking.services.ClientService;
+import com.mindhub.homebanking.utils.CardUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,23 +33,23 @@ public class CardController {
     private ClientService clientService;
 
 
-    private static Set<String> existingCardNumbers = new HashSet<>();
+
 
     // --------------------- Methods ----------------------
     // Return a list of all cards data
-    @RequestMapping("/cards")
+    @GetMapping("/cards")
     public List<CardDTO> getCards() {
         return cardService.findAllCards();
     }
 
     // Return data from an specific card
-    @RequestMapping("/cards/{id}")
+    @GetMapping("/cards/{id}")
     public CardDTO getCard(@PathVariable Long id){
         return cardService.findCardById(id);
     }
 
     // Generate a new card
-    @RequestMapping(path = "/clients/current/cards", method = RequestMethod.POST)
+    @PostMapping("/clients/current/cards")
     public ResponseEntity<Object> addCard(Authentication authentication, @RequestParam CardColor cardColor, CardType cardType) {
 
         // Get current client
@@ -65,13 +66,13 @@ public class CardController {
             LocalDate thruDate = actualDate.plusYears(5);
 
             // Generate new card number
-            String newCardNumber = generateCardNumber();
+            String newCardNumber = CardUtils.generateCardNumber();
 
             // Add new cardNumber to Set existingCardNumbers
-            existingCardNumbers.add(newCardNumber);
+            CardUtils.addExistingCardNumbers(newCardNumber);
 
             // Generate new CVV number
-            short cvv = generateCVV();
+            short cvv = CardUtils.generateCVV();
 
             // Create card object
             Card newCard = new Card(cardType, newCardNumber, cvv, actualDate, thruDate, currentClient.getFirstName() + " " + currentClient.getLastName(), cardColor);
@@ -90,22 +91,5 @@ public class CardController {
 
     }
 
-    public static short generateCVV() {
-        Random random = new Random();
-        return (short) (random.nextInt(900) + 100);
-    }
 
-    public static String generateCardNumber() {
-        Random random = new Random();
-        String newCardNumber;
-
-        do {
-            newCardNumber = String.format("%04d", random.nextInt(10000)) + "-" +
-                    String.format("%04d", random.nextInt(10000)) + "-" +
-                    String.format("%04d", random.nextInt(10000)) + "-" +
-                    String.format("%04d", random.nextInt(10000));
-        } while (existingCardNumbers.contains(newCardNumber));
-
-        return newCardNumber;
-    }
 }

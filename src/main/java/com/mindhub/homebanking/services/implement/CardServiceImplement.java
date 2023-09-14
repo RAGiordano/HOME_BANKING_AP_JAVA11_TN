@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 public class CardServiceImplement implements CardService {
@@ -37,4 +39,13 @@ public class CardServiceImplement implements CardService {
     public void saveCard(Card card) {
         cardRepository.save(card);
     }
+
+    @Override
+    public Set<String> getExistingCardNumbers() {
+        return cardRepository.findAll().stream()
+                .map(card -> card.getNumber())
+                .collect(toSet());
+    }
+
+
 }
