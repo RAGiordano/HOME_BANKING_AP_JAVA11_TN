@@ -18,7 +18,10 @@ public class CardDTO {
     private LocalDate thruDate;
     private String cardHolder;
     private CardColor color;
+    private boolean active;
+
     //private Client client;
+
 
     // -------------------- Constructors --------------------
 
@@ -31,7 +34,7 @@ public class CardDTO {
         this.thruDate = card.getThruDate();
         this.cardHolder = card.getCardHolder();
         this.color = card.getColor();
-        //this.client = card.getClient();
+        this.active = card.isActive();
     }
 
 
@@ -67,6 +70,10 @@ public class CardDTO {
 
     public CardColor getColor() {
         return color;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     /*public Client getClient() {

@@ -20,6 +20,7 @@ public class Card {
     private LocalDate thruDate;
     private String cardHolder;
     private CardColor color;
+    private boolean active;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="client_id")
     private Client client;
@@ -37,6 +38,7 @@ public class Card {
         this.thruDate = thruDate;
         this.cardHolder = cardHolder;
         this.color = color;
+        this.active = true;
     }
 
     // -------------------- Getters & Setters --------------------
@@ -99,6 +101,14 @@ public class Card {
 
     public void setColor(CardColor color) {
         this.color = color;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @JsonIgnore

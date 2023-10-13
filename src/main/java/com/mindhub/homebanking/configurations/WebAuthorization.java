@@ -52,6 +52,7 @@ public class WebAuthorization {
                         "/web/transfers.html",
                         "/web/loan-application.html",
                         "/web/create-cards.html",
+                        "/web/delete-cards.html",
                         "/api/clients/current",
                         "/api/accounts/**",
                         "/api/clients/current/accounts",

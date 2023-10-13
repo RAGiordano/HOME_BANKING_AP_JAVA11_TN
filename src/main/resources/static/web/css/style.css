@@ -33,7 +33,7 @@
     display: inline;
 }
 
-#create {
+#create, #delete {
     margin-bottom: 15px;
 }
 
